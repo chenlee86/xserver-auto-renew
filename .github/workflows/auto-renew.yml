@@ -1,0 +1,43 @@
+name: Xserver Auto Renew
+
+on:
+  # 每天 UTC 0:00 运行（北京时间 8:00）
+  schedule:
+    - cron: '0 0 * * *'
+  # 也可以手动触发
+  workflow_dispatch:
+
+jobs:
+  renew:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Set up Chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
+      - name: Create .env file
+        run: |
+          echo "ID_VPS=${{ secrets.ID_VPS }}" > .env
+          echo "USERNAME=${{ secrets.XSERVER_USERNAME }}" >> .env
+          echo "PASSWORD=${{ secrets.XSERVER_PASSWORD }}" >> .env
+
+      - name: Login and get cookies
+        env:
+          HEADLESS: "true"
+        run: python -m xserver-auto-renew.login
+
+      - name: Renew VPS
+        run: python -m xserver-auto-renew.main
