@@ -1,5 +1,6 @@
 import json
 import os
+import time
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -23,8 +24,17 @@ if __name__ == "__main__":
     driver.find_element(By.ID, "memberid").send_keys(env.username)
     driver.find_element(By.ID, "user_password").send_keys(env.password, Keys.ENTER)
 
-    while driver.current_url != "https://secure.xserver.ne.jp/xapanel/xvps/index":
-        driver.implicitly_wait(10)
+    timeout = 30
+    start_time = time.time()
+    while "login" in driver.current_url:
+        time.sleep(1)
+        if time.time() - start_time > timeout:
+            print(f"Login timeout or failed. Current URL: {driver.current_url}")
+            print(f"Page Source Preview: {driver.page_source[:500]}")
+            driver.quit()
+            exit(1)
+    
+    print(f"Login finished, current URL: {driver.current_url}")
 
     cookies = driver.get_cookies()
     with open("cookies.json", "w", encoding="utf-8") as f:
