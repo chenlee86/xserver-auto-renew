@@ -22,7 +22,8 @@ if __name__ == "__main__":
 
     driver.get("https://secure.xserver.ne.jp/xapanel/login/xvps/")
     driver.find_element(By.ID, "memberid").send_keys(env.username)
-    driver.find_element(By.ID, "user_password").send_keys(env.password, Keys.ENTER)
+    driver.find_element(By.ID, "user_password").send_keys(env.password)
+    driver.find_element(By.NAME, "action_user_login").click()
 
     timeout = 30
     start_time = time.time()
@@ -30,7 +31,11 @@ if __name__ == "__main__":
         time.sleep(1)
         if time.time() - start_time > timeout:
             print(f"Login timeout or failed. Current URL: {driver.current_url}")
-            print(f"Page Source Preview: {driver.page_source[:500]}")
+            print("Page Text Preview:")
+            try:
+                print(driver.find_element(By.TAG_NAME, "body").text)
+            except Exception as e:
+                print(f"Could not get body text: {e}")
             driver.quit()
             exit(1)
     
