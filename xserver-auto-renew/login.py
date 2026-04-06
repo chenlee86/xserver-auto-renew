@@ -4,6 +4,7 @@ import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 
 from .settings import LoginSettings
 
@@ -20,8 +21,7 @@ if __name__ == "__main__":
 
     driver.get("https://secure.xserver.ne.jp/xapanel/login/xvps/")
     driver.find_element(By.ID, "memberid").send_keys(env.username)
-    driver.find_element(By.ID, "user_password").send_keys(env.password)
-    driver.execute_script("loginFunc()")
+    driver.find_element(By.ID, "user_password").send_keys(env.password, Keys.ENTER)
 
     while driver.current_url != "https://secure.xserver.ne.jp/xapanel/xvps/index":
         driver.implicitly_wait(10)
