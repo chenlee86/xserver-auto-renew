@@ -91,4 +91,8 @@ if __name__ == "__main__":
     else:
         msg = "❌ 续期失败或出现未知异常，请人工介入检查！(Failed to renew VPS)"
         send_telegram_message(env, msg)
+        print("Failed to renew, HTTP Status:", res2.status_code)
+        print("Response URL:", res2.url)
+        print("Excerpt of response text:")
+        print(res2.text[:3000])
         raise RuntimeError("Failed to renew VPS")
